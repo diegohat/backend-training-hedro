@@ -1,0 +1,30 @@
+{
+  "name": "device-sim",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "main": "dist/src/main.ts",
+  "scripts": {
+    "start": "rm -rf dist && npx tsc && node dist/src/main.js | pino-pretty",
+    "build": "npx tsc"
+  },
+  "dependencies": {
+    "dotenv": "16.3.2",
+    "mqtt": "5.3.4",
+    "pino": "8.17.2"
+  },
+  "devDependencies": {
+    "@types/node": "20.11.5",
+    "@typescript-eslint/eslint-plugin": "6.19.1",
+    "eslint": "8.56.0",
+    "eslint-config-standard-with-typescript": "43.0.1",
+    "eslint-plugin-import": "2.29.1",
+    "eslint-plugin-n": "16.6.2",
+    "eslint-plugin-promise": "6.1.1",
+    "pino-pretty": "10.3.1",
+    "ts-node": "10.9.2",
+    "typescript": "5.3.3"
+  }
+}

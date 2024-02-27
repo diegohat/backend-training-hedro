@@ -1,0 +1,82 @@
+version: '3'
+
+services:
+
+############################## >> MQTT << ##############################
+  device-sim:
+    image: device-sim
+    container_name: device-sim
+    environment:
+      - TEMP_TIMEOUT=1000
+      - HUMIDITY_TIMEOUT=1000
+      - MQTT_HOST=emqx:1883
+      - MQTT_PROTOCOL=tcp
+      - MQTT_USER=device-sim
+      - MQTT_PASSWORD=device-sim
+      - LOG_LEVEL=debug
+
+############################## >> MQTT BROKER << ##############################
+  emqx:
+    image: emqx/emqx:5.3
+    container_name: emqx
+    environment:
+      - EMQX_NAME=emqx
+      - EMQX_HOST=node1.emqx
+      - EMQX_NODE__DIST_LISTEN_MIN=6369
+      - EMQX_NODE__DIST_LISTEN_MAX=6379
+      - EMQX_LISTENER__TCP__EXTERNAL=1883
+      - EMQX_LOADED_PLUGINS=emqx_recon,emqx_retainer,emqx_management,emqx_auth_username
+    ports:
+      - 1883:1883 # porta do broker tcp
+      - 8883:8883
+      - 8083:8083
+      - 18083:18083 # porta da dashbaord web
+
+############################## >> RMQ BROKER << ##############################
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=public
+    ports:
+      - 15672:15672 # porta da dashboard web
+      - 5672:5672 # porta do broker
+      - 15692:15692
+
+############################## >> MQTT -> RMQ << ##############################
+  mqtt-rmq:
+    image: mqtt-rmq
+    container_name: mqtt-rmq
+    environment:
+      - RUST_LOG=debug
+
+      - MQTT_HOST=emqx
+      - MQTT_PROTOCOL=tcp
+      - MQTT_PORT=1883
+      - MQTT_CLIENT_ID=mqtt-rmq
+      - MQTT_USER_NAME=mqtt-rmq
+      - MQTT_PASSWORD=mqtt-rmq
+
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=mqtt-rmq
+      - RABBITMQ_PASSWORD=mqtt-rmq
+      - RABBITMQ_EXCHANGE=hedro
+      - RABBITMQ_QUEUE=consumer1
+
+############################## >> RMQ -> AWS << ##############################
+  rmq-aws:
+    image: rmq-aws
+    container_name: rmq-aws
+    environment:
+      - RUST_LOG=debug
+
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=rmq-aws
+      - RABBITMQ_PASSWORD=rmq-aws
+      - RABBITMQ_EXCHANGE=hedro
+      - RABBITMQ_QUEUE=consumer1
+
+############################## >> AWS -> gRPC << ##############################
