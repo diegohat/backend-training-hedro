@@ -44,14 +44,14 @@ impl BridgeService for BridgeServiceImpl {
             .set_type(Some(MeasureValueType::Double))
             .set_value(Some(data.value.to_string()))
             .build()
-            .expect("Failed to create MeasureValue....");
+            .expect("Failed to create MeasureValue.");
 
         let dimension = Dimension::builder()
             .set_name(Some("Device".into()))
             .set_dimension_value_type(Some(DimensionValueType::Varchar))
             .set_value(Some(data.device.to_string()))
             .build()
-            .expect("Failed to create Dimension....");
+            .expect("Failed to create Dimension.");
 
         let record = Record::builder()
             .set_time(Some(time_epoch.as_millis().to_string()))
@@ -68,7 +68,7 @@ impl BridgeService for BridgeServiceImpl {
                 Ok(())
             }
             Err(_) => {
-                error!("Failured to publish message!!");
+                error!("Failed to publish message.");
                 Err(())
             }
         }

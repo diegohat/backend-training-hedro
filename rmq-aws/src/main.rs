@@ -10,10 +10,10 @@ use crate::infra::rmq_messenger::RabbitMQMessenger;
 #[tokio::main]
 async fn main() 
 {
-    dotenvy::dotenv().expect("Failure to read .env....");
+    dotenvy::dotenv().expect("Failure to read .env.");
     env_logger::init();
 
-    info!("starting aplication.....");
+    info!("starting aplication...");
 
     let aws_messenger = AWSMessenger::new();
 
@@ -22,5 +22,5 @@ async fn main()
     let _rmq_messenger = RabbitMQMessenger::new(Box::new(service))
         .connect()
         .await
-        .expect("Failed to connect to RabbitMQ Broker....");
+        .expect("Failed to connect to RabbitMQ Broker.");
 }

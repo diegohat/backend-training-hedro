@@ -32,27 +32,27 @@ impl RabbitMQMessenger {
 impl RabbitMQMessenger {
     fn envs(&self) -> Result<RabbitMQConfig, ()> {
         let Ok(host) = env::var("RABBITMQ_HOST") else {
-            error!("Failed to read RABBIT_HOST env....");
+            error!("Failed to read RABBIT_HOST env.");
             return Err(())
         };
 
         let Ok(port) = env::var("RABBITMQ_PORT") else {
-            error!("Failed to read RABBITMQ_PORT env....");
+            error!("Failed to read RABBITMQ_PORT env.");
             return Err(())
         };
 
         let Ok(user) = env::var("RABBITMQ_USER") else {
-            error!("Failed to read RABBITMQ_USER env....");
+            error!("Failed to read RABBITMQ_USER env.");
             return Err(())
         };
 
         let Ok(password) = env::var("RABBITMQ_PASSWORD") else {
-            error!("Failed to read RABBITMQ_PASSWORD env....");
+            error!("Failed to read RABBITMQ_PASSWORD env.");
             return Err(())
         };
 
         let Ok(queue) = env::var("RABBITMQ_QUEUE") else {
-            error!("Failed to read RABBITMQ_QUEUE env....");
+            error!("Failed to read RABBITMQ_QUEUE env.");
             return Err(())
         };
 
@@ -68,7 +68,7 @@ impl RabbitMQMessenger {
     pub async fn connect(&mut self) -> Result<(), ()> {
         let envs = self.envs()?;
 
-        info!("Starting RabbitMq conection!!");
+        info!("Starting RabbitMQ conection!!");
 
         let addr = format!(
             "amqp://{}:{}@{}:{}",
@@ -76,25 +76,25 @@ impl RabbitMQMessenger {
         );
 
         let Ok(conn) = Connection::connect(&addr, ConnectionProperties::default()).await else {
-            error!("RabbitMq connection failre....");
+            error!("RabbitMQ connection failure.");
             return Err(())
         };
 
-        info!("RabbitMq conected!");
-        info!("Starting RabbitMq chanel!!");
+        info!("RabbitMQ conected!");
+        info!("Starting RabbitMQ chanel!!");
 
         let Ok(channel) = conn.create_channel().await else {
-            error!("RabbitMq channel failure....");
+            error!("Failed to create RabbitMQ channel.");
             return Err(())
         };
 
-        info!("RabbitMq channel created!");
+        info!("RabbitMQ channel created!");
 
         let mut consumer = self.consume(channel).await?;
 
         while let Some(event) = consumer.next().await {
             let Ok(delivery) = event else {
-                error!("Failed to deliver message....");
+                error!("Failed to deliver message.");
                 return Err(())
             };
             self.handler(delivery).await;
@@ -114,7 +114,7 @@ impl RabbitMQMessenger {
             )
             .await
         else {
-            error!("Failed to create consumer....");
+            error!("Failed to create consumer.");
             return Err(())
         };
 
@@ -129,7 +129,7 @@ impl RabbitMQMessenger {
         };
 
         let Ok(deserialized_msg): Result <RMQMessage, _> = serde_json::from_slice(&delivery.data) else {
-            error!("Failed to deserialize....");
+            error!("Failed to deserialize.");
             return
         };
         info!("Message: {:?}", deserialized_msg);
@@ -140,7 +140,7 @@ impl RabbitMQMessenger {
                 info!("Message processed successfully!")
             }
 
-            Err(_) => error!("Failed to process message....")
+            Err(_) => error!("Failed to process message.")
         }
     }
 }

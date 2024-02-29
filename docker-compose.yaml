@@ -78,5 +78,13 @@ services:
       - RABBITMQ_PASSWORD=rmq-aws
       - RABBITMQ_EXCHANGE=hedro
       - RABBITMQ_QUEUE=consumer1
+      - AWS_DATABASE_NAME=hdr-training
+      - AWS_TABLE_NAME=diego
 
 ############################## >> AWS -> gRPC << ##############################
+  # aws-grpc:
+  #   image: aws-grpc
+  #   container_name: aws-grpc
+  #   environment:
+  #     - AWS_DATABASE_NAME=hdr-training
+  #     - AWS_TABLE_NAME=diego

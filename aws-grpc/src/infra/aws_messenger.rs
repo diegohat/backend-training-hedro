@@ -1,9 +1,6 @@
-use async_trait::async_trait;
-use aws_sdk_timestreamwrite::{types::Record, Client};
-use log::{error, info};
+use aws_sdk_timestreamquery::Client;
+use log::error;
 use std::{env, error::Error};
-
-use crate::services::service::Messaging;
 
 struct AWSConfigs {
     database: String,
@@ -43,38 +40,7 @@ impl AWSMessenger {
                 Err(err)
             }
         }?;
-
+        
         Ok(client)
-    }
-}
-
-#[async_trait]
-impl Messaging for AWSMessenger {
-    async fn publish(&self, record: Record) -> Result<(), ()> {
-        let envs = self.envs()?;
-
-        let Ok(client) = self.connect().await else {
-            error!("Failed to connect to client.");
-            return Err(());
-        };
-
-        match client
-            .write_records()
-            .set_database_name(Some(envs.database.into()))
-            .set_table_name(Some(envs.table.into()))
-            .set_records(Some(vec![record]))
-            .send()
-            .await
-        {
-            Ok(_) => {
-                info!("Inserted values in database!");
-            }
-            Err(err) => {
-                error!("Failed to insert the values in database.");
-                error!("{:?}", err);
-            }
-        }
-
-        Ok(())
     }
 }
